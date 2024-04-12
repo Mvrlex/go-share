@@ -1,0 +1,92 @@
+<script>
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('fileInput', () => ({
+      fileTooLarge: false,
+      /** @type {File} */
+      selectedFile: undefined,
+      /** @param $event {InputEvent} */
+      fileChange($event) {
+        this.changeFile($event.target.files);
+      },
+      /** @param $event {DragEvent} */
+      fileDragOver($event) {
+        if (!$event.dataTransfer.types.includes('Files'))
+          return;
+        $event.preventDefault();
+      },
+      /** @param $event {DragEvent} */
+      fileDrop($event) {
+        $event.preventDefault();
+        this.changeFile($event.dataTransfer.files);
+      },
+      /** @param files {FileList} */
+      changeFile(files) {
+        /** @type {File} */
+        const file = files[0];
+        if (!file) {
+          this.$refs.input.setCustomValidity(''); // resets to the browsers default message
+          this.fileTooLarge = false;
+        } else if (file.size >= 104857600) {
+          this.$refs.input.setCustomValidity('File is too large.');
+          this.fileTooLarge = true;
+        } else if (file.size + {{ .CurrentFileSizeBytes }} > {{ .MaxFileSizeBytes }}) {
+          this.$refs.input.setCustomValidity('File exceeds server limit.');
+          this.fileTooLarge = false;
+        } else {
+          this.$refs.input.setCustomValidity('');
+          this.fileTooLarge = false;
+        }
+        if (!file) {
+          this.$refs.input.files = undefined;
+        } else {
+          const transfer = new DataTransfer();
+          transfer.items.add(file);
+          this.$refs.input.files = transfer.files;
+        }
+        this.selectedFile = file;
+      }
+    }))
+  })
+</script>
+
+<!-- Design note: Forms with enctype="multipart/form-data" use the order of the
+inputs in the form to determine the order of the boundaries sent to the server.
+For us the order is important as we only want to receive the file after we know
+whether it needs to be encrypted or not. That's why we specify a custom order,
+that way the style of the page does not interfere with the functionality. -->
+<div x-data="fileInput" class="input-grid-file flex flex-column" style="order: -1">
+  <!-- TODO add check for server file capacity -->
+  <label class="flex flex-center drop-area file-input-container m-0"
+         @dragover="fileDragOver($event)"
+         @drop="fileDrop($event)">
+    <template x-if="!selectedFile">
+      <div class="contents">
+        <svg class="icon-xl">
+          <use href="assets/tabler-icons.svg#file-upload"></use>
+        </svg>
+        <span>
+          <b>Drag your file here</b><br>
+          or select one by clicking
+        </span>
+      </div>
+    </template>
+    <template x-if="selectedFile">
+      <div class="contents">
+        <svg class="icon-xl">
+          <use href="assets/tabler-icons.svg#file-text"></use>
+        </svg>
+        <span x-text="selectedFile.name" class="break-word"></span>
+      </div>
+    </template>
+    <!-- TODO check if styling is possible -->
+    <input type="file" name="file" required
+           style="margin: 0; padding-inline: 0 !important; box-shadow: none !important;"
+           aria-label="pick a file to upload"
+           @input="fileChange($event)"
+           x-ref="input"
+           :aria-invalid="fileTooLarge">
+  </label>
+  <small x-show="fileTooLarge" class="invalid-helper">
+    File uploads are limited to <span x-text="Math.floor({{ .MaxFileSizeBytes }} / 1024 / 1024)"></span>MB files.
+  </small>
+</div>

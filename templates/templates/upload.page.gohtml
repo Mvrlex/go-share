@@ -1,0 +1,82 @@
+<!-- shows an upload page where you can select the file you want to upload, and specify any options you want, like storage duration or a password -->
+{{ define "content" }}
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('fileForm', () => ({
+        isUploading: false,
+        uploadProgress: 0,
+        /** @param $event {SubmitEvent} */
+        submit($event) {
+          $event.preventDefault();
+
+          const xhr = new XMLHttpRequest();
+          xhr.upload.onprogress = e => this.uploadProgress = e.loaded / e.total * 100;
+          xhr.upload.onerror = () => alert('Some kind of connection issue occurred, we could not fully process your request. Please try again.');
+          xhr.onloadend = () => this.isUploading = false;
+          xhr.onload = () => document.querySelector('article')
+            .replaceWith(xhr.responseXML.querySelector('article'));
+
+          xhr.open($event.target.method, $event.target.action);
+          xhr.responseType = "document";
+          xhr.send(new FormData($event.target));
+          this.isUploading = true;
+        }
+      }))
+    })
+  </script>
+  <section class="page-header">
+    <h1>
+      Secure Single
+      <span class="text-highlight">File Sharing</span>
+    </h1>
+    <p>
+      Simply pick a file and share the generated link. The file will only be available to
+      download <strong>exactly once</strong>, after which it is permanently deleted from
+      our servers.
+    </p>
+  </section>
+  <article x-data="fileForm" class="relative mb-0">
+    <form action="/shares" method="post" enctype="multipart/form-data" autocomplete="off"
+          @submit="submit($event)" :class="isUploading ? 'invisible' : ''">
+
+      <div class="input-grid">
+
+        <!-- TODO note: when changing value here, don't forget to adjust the validation in upload-multipart-reader.go -->
+        <label class="input-grid-duration">
+          Storage duration
+          <small id="storage-duration-help-text" class="block">Your file will
+            only be available for a limited period of time, so we can delete it if your
+            recipient does not have a need for it.</small>
+          <select name="duration" required class="mb-0">
+            <option value="1m">1 minute</option>
+            <option value="20m" selected>20 minutes</option>
+            <option value="1h">1 hour</option>
+            <option value="24h">1 day</option>
+          </select>
+        </label>
+
+        <label class="input-grid-password">
+          Password (optional)
+          <small id="password-help-text" class="block">To download your file,
+            the recipient must enter this password.</small>
+          <input type="password" name="password" aria-describedby="password-help-text"
+                 minlength="4" maxlength="128" class="mb-0">
+        </label>
+
+          {{ template "file-input.component.gohtml" . }}
+
+        <button class="input-grid-submit mb-0" type="submit">
+          Upload
+        </button>
+
+      </div>
+
+    </form>
+    <template x-if="isUploading">
+      <div class="flex flex-center flex-column progress-indicator-container">
+        <progress :value="uploadProgress" id="upload-progress" max="100"></progress>
+        Uploading file...
+      </div>
+    </template>
+  </article>
+{{ end }}

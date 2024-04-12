@@ -1,0 +1,148 @@
+.page-header {
+    margin-bottom: 3rem;
+    text-align: center;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.text-highlight {
+    color: var(--pico-primary);
+}
+
+/* Upload page */
+
+.input-grid {
+    display: grid;
+    grid-template-areas:
+                  "file"
+                  "duration"
+                  "password"
+                  "submit";
+    gap: var(--pico-spacing);
+}
+
+.input-grid-file {
+    grid-area: file;
+}
+
+.input-grid-duration {
+    grid-area: duration;
+}
+
+.input-grid-password {
+    grid-area: password;
+}
+
+.input-grid-submit {
+    grid-area: submit;
+}
+
+@media (min-width: 768px) {
+    .input-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+                  "file duration"
+                  "file password"
+                  "file submit";
+    }
+}
+
+.drop-area {
+    border: 2px dashed var(--pico-form-element-border-color);
+    border-radius: 4px;
+}
+
+.file-input-container {
+    min-height: 120px;
+    text-align: center;
+    padding: 1em;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 0.5em;
+}
+
+.progress-indicator-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1rem;
+    height: 100%;
+    width: 100%;
+    background: var(--pico-card-background-color);
+    text-align: center;
+}
+
+.button-full {
+    width: 100%;
+    gap: 8px;
+}
+
+/* Icons */
+
+.icon {
+    width: 24px;
+    height: 24px;
+}
+
+.icon-sm {
+    width: 20px;
+    height: 20px;
+}
+
+.icon-lg {
+    width: 32px;
+    height: 32px;
+}
+
+.icon-xl {
+    width: 64px;
+    height: 64px;
+}
+
+/* Utils */
+
+.relative {
+    position: relative;
+}
+
+.block {
+    display: block;
+}
+
+.contents {
+    display: contents;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-center {
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+
+.m-0 {
+    margin: 0 !important;
+}
+
+.break-word {
+    word-break: break-word;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.text-center {
+    text-align: center;
+}
