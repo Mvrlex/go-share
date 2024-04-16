@@ -2,6 +2,7 @@ package web
 
 import (
 	"github.com/gorilla/mux"
+	"io/fs"
 	"majo-tech.com/share/storage"
 	"majo-tech.com/share/web/handlers"
 	"majo-tech.com/share/web/templates"
@@ -22,7 +23,6 @@ type Server struct {
 }
 
 func (s *Server) Start() error {
-	router := mux.NewRouter()
 
 	assets, err := templates.LoadAssets()
 	if err != nil {
@@ -38,6 +38,22 @@ func (s *Server) Start() error {
 	if err != nil {
 		return err
 	}
+
+	router := mux.NewRouter()
+	s.setupHandlers(router, templates, assets, timeoutErrorTemplate)
+	s.setupCors(router, s.Host)
+
+	httpServer := http.Server{
+		Handler:      router,
+		Addr:         "127.0.0.1:8080",
+		WriteTimeout: time.Second * 125,
+		ReadTimeout:  time.Second * 125,
+	}
+
+	return httpServer.ListenAndServe()
+}
+
+func (s *Server) setupHandlers(router *mux.Router, templates templates.Templates, assets fs.FS, timeoutErrorTemplate string) {
 
 	router.
 		Methods("GET").
@@ -86,14 +102,15 @@ func (s *Server) Start() error {
 		PathPrefix("/assets").
 		Handler(http.StripPrefix("/assets", http.FileServer(http.FS(assets))))
 
-	// TODO add cors header handling
+}
 
-	httpServer := http.Server{
-		Handler:      router,
-		Addr:         "127.0.0.1:8080",
-		WriteTimeout: time.Second * 125,
-		ReadTimeout:  time.Second * 125,
-	}
-
-	return httpServer.ListenAndServe()
+func (s *Server) setupCors(router *mux.Router, host string) {
+	router.Use(mux.CORSMethodMiddleware(router))
+	router.
+		PathPrefix("/").
+		Methods("OPTIONS").
+		HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+			writer.Header().Set("Access-Control-Allow-Origin", host)
+			writer.Header().Set("Access-Control-Max-Age", "86400") // max for firefox
+		})
 }
