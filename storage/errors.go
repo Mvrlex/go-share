@@ -6,14 +6,12 @@ import (
 )
 
 var (
-	KeyGenerationError    = errors.New("could not generate key for storage")
-	FileCreationError     = errors.New("could not create file")
-	FileWriteError        = errors.New("could not write to file")
-	FileReadError         = errors.New("could not read from file")
-	PasswordMissingError  = errors.New("the requested file requires a password and none was provided")
-	PasswordWrongError    = errors.New("provided password is incorrect")
-	PasswordTooShortError = errors.New("provided password is too short")
-	PasswordTooLongError  = errors.New("provided password is too long")
+	KeyGenerationError   = errors.New("could not generate key for storage")
+	FileCreationError    = errors.New("could not create file")
+	FileWriteError       = errors.New("could not write to file")
+	FileReadError        = errors.New("could not read from file")
+	PasswordMissingError = errors.New("the requested file requires a password and none was provided")
+	PasswordWrongError   = errors.New("provided password is incorrect")
 )
 
 type DirectoryCreationError struct {

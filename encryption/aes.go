@@ -4,30 +4,58 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"errors"
 	"golang.org/x/crypto/argon2"
 	"io"
+)
+
+var (
+	PasswordTooShortError = errors.New("provided password is too short")
+	PasswordTooLongError  = errors.New("provided password is too long")
 )
 
 type Aes struct {
 }
 
-func (a *Aes) Encrypt(value io.Reader, password, salt string) (pwHash string, encrypted io.Reader) {
-	genHash := hash([]byte(password), []byte(salt))
-	return string(genHash), crypt(value, genHash)
+func (a *Aes) Encrypt(value io.Reader, password, salt string) (pwHash string, encrypted io.Reader, err error) {
+	genHash, err := hash([]byte(password), []byte(salt))
+	if err != nil {
+		return "", nil, err
+	}
+	return string(genHash), crypt(value, genHash), nil
 }
 
-func (a *Aes) Decrypt(value io.Reader, password, salt string) io.Reader {
-	genHash := hash([]byte(password), []byte(salt))
-	return crypt(value, genHash)
+func (a *Aes) Decrypt(value io.Reader, password, salt string) (io.Reader, error) {
+	genHash, err := hash([]byte(password), []byte(salt))
+	if err != nil {
+		return nil, err
+	}
+	return crypt(value, genHash), nil
 }
 
 func (a *Aes) Verify(password, salt, pwHash string) bool {
-	genHash := hash([]byte(password), []byte(salt))
+	genHash, err := hash([]byte(password), []byte(salt))
+	if err != nil {
+		return false
+	}
 	return bytes.Equal(genHash, []byte(pwHash))
 }
 
-func hash(password, salt []byte) []byte {
-	return argon2.IDKey(password, salt, 1, 64*1024, 4, 32)
+func hash(password, salt []byte) ([]byte, error) {
+	if err := validatePassword(password); err != nil {
+		return nil, err
+	}
+	return argon2.IDKey(password, salt, 1, 64*1024, 4, 32), nil
+}
+
+func validatePassword(password []byte) error {
+	if len(password) < 4 {
+		return PasswordTooShortError
+	}
+	if len(password) > 128 {
+		return PasswordTooLongError
+	}
+	return nil
 }
 
 // crypt both encrypts and decrypts a value using the given password and salt.

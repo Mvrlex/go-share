@@ -75,9 +75,6 @@ func readPassword(reader *multipart.Reader) (string, error) {
 	if err != nil {
 		return "", errors.Join(errors.New("could not read part"), err)
 	}
-	if len(partData) != 0 && (len(partData) > 127 || len(partData) < 3) {
-		return "", errors.New("password has an invalid length")
-	}
 	return string(partData), nil
 }
 

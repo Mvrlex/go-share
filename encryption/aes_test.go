@@ -2,6 +2,7 @@ package encryption
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"strings"
 	"testing"
@@ -10,9 +11,12 @@ import (
 func TestEncryption(t *testing.T) {
 	aes := Aes{}
 
-	hash, encryptReader := aes.Encrypt(strings.NewReader("value"), "password", "salt")
+	hash, encryptReader, err := aes.Encrypt(strings.NewReader("value"), "password", "salt")
+	if err != nil {
+		t.Error(err)
+	}
 	encrypted := make([]byte, 5)
-	_, err := encryptReader.Read(encrypted)
+	_, err = encryptReader.Read(encrypted)
 	if err != nil && err != io.EOF {
 		t.Error(err)
 	}
@@ -21,7 +25,10 @@ func TestEncryption(t *testing.T) {
 		t.Errorf("encrypted value matches input")
 	}
 
-	decryptReader := aes.Decrypt(bytes.NewReader(encrypted), "password", "salt")
+	decryptReader, err := aes.Decrypt(bytes.NewReader(encrypted), "password", "salt")
+	if err != nil {
+		t.Error(err)
+	}
 	decrypted := make([]byte, 5)
 	_, err = decryptReader.Read(decrypted)
 	if err != nil && err != io.EOF {
@@ -37,7 +44,10 @@ func TestEncryption(t *testing.T) {
 func TestHashVerification(t *testing.T) {
 	aes := Aes{}
 
-	hash, _ := aes.Encrypt(strings.NewReader("value"), "password", "salt")
+	hash, _, err := aes.Encrypt(strings.NewReader("value"), "password", "salt")
+	if err != nil {
+		t.Error(err)
+	}
 	if !aes.Verify("password", "salt", hash) {
 		t.Errorf("Generated hashes from the same values did not match")
 	}
@@ -46,6 +56,31 @@ func TestHashVerification(t *testing.T) {
 	}
 	if aes.Verify("password", "pepper", hash) {
 		t.Errorf("Generated hashes from different salts did match")
+	}
+
+}
+
+func TestPasswordLengthValidation(t *testing.T) {
+	aes := Aes{}
+
+	_, _, err := aes.Encrypt(strings.NewReader(""), "123", "")
+	if !errors.Is(err, PasswordTooShortError) {
+		t.Errorf("Passwords with length below 4 should not be allowed")
+	}
+
+	_, _, err = aes.Encrypt(strings.NewReader(""), "1234", "")
+	if err != nil {
+		t.Errorf("Passwords with length 4 should be allowed")
+	}
+
+	_, _, err = aes.Encrypt(strings.NewReader(""), "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789", "")
+	if !errors.Is(err, PasswordTooLongError) {
+		t.Errorf("Passwords with length above 128 should not be allowed")
+	}
+
+	_, _, err = aes.Encrypt(strings.NewReader(""), "12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678", "")
+	if err != nil {
+		t.Errorf("Passwords with length 128 should be allowed")
 	}
 
 }

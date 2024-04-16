@@ -84,11 +84,11 @@ func (fs *FilesystemStorage) Store(name string, value io.Reader, password string
 
 	log.Printf("attempting storage of new file with key %q", key)
 
-	effectivePassword, err := fs.passwordOrFallback(password)
+	effectivePassword := fs.passwordOrFallback(password)
+	hash, encrypted, err := fs.encryption.Encrypt(value, effectivePassword, key)
 	if err != nil {
 		return "", err
 	}
-	hash, encrypted := fs.encryption.Encrypt(value, effectivePassword, key)
 
 	filePath := filepath.Join(fs.basePath, key)
 	bytes, err := writeFile(filePath, encrypted)
@@ -124,10 +124,7 @@ func (fs *FilesystemStorage) Get(key string, password string) (*StoredValue, err
 		return nil, PasswordMissingError
 	}
 
-	password, err := fs.passwordOrFallback(password)
-	if err != nil {
-		return nil, err
-	}
+	password = fs.passwordOrFallback(password)
 	if !fs.encryption.Verify(password, key, file.PwHash) {
 		return nil, PasswordWrongError
 	}
@@ -138,7 +135,10 @@ func (fs *FilesystemStorage) Get(key string, password string) (*StoredValue, err
 		return nil, errors.Join(FileReadError, err)
 	}
 
-	decryptReader := fs.encryption.Decrypt(openedFile, password, key)
+	decryptReader, err := fs.encryption.Decrypt(openedFile, password, key)
+	if err != nil {
+		return nil, err
+	}
 
 	storedValue := &StoredValue{
 		Reader: decryptReader,
@@ -208,25 +208,11 @@ func (fs *FilesystemStorage) Close() error {
 	return deleteDirectory(fs.basePath)
 }
 
-func (fs *FilesystemStorage) passwordOrFallback(password string) (string, error) {
+func (fs *FilesystemStorage) passwordOrFallback(password string) string {
 	if password == "" {
-		return fs.fallbackPassword, nil
+		return fs.fallbackPassword
 	}
-	err := fs.validatePassword(password)
-	if err != nil {
-		return "", err
-	}
-	return password, nil
-}
-
-func (fs *FilesystemStorage) validatePassword(password string) error {
-	if len(password) < 4 {
-		return PasswordTooShortError
-	}
-	if len(password) > 128 {
-		return PasswordTooLongError
-	}
-	return nil
+	return password
 }
 
 func writeFile(path string, value io.Reader) (int64, error) {
