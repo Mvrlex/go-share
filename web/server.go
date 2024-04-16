@@ -1,25 +1,21 @@
-package server
+package web
 
 import (
-	"embed"
 	"github.com/gorilla/mux"
 	"majo-tech.com/share/storage"
-	"majo-tech.com/share/templates"
+	"majo-tech.com/share/web/handlers"
+	"majo-tech.com/share/web/templates"
 	"net/http"
 	"time"
 )
 
 var (
-	//go:embed assets
-	assets embed.FS
-
 	textHtmlRegex          = "(text\\/html)|(\\*\\/\\*)"
 	multipartFormDataRegex = "^multipart\\/form-data;\\ ?boundary="
 )
 
 type Server struct {
 	Storage          storage.Storage
-	Templates        templates.Templates
 	MaxFileSizeBytes int64 // Max size for a single file upload.
 	DiskSpaceBytes   int64 // Max size that the sum of all files are allowed to allocate on disk.
 	Host             string
@@ -28,7 +24,17 @@ type Server struct {
 func (s *Server) Start() error {
 	router := mux.NewRouter()
 
-	timeoutErrorTemplate, err := TimeoutErrorTemplate(s.Templates)
+	assets, err := templates.LoadAssets()
+	if err != nil {
+		return err
+	}
+
+	templates, err := templates.LoadTemplates()
+	if err != nil {
+		return err
+	}
+
+	timeoutErrorTemplate, err := templates.TemplateTimeoutError()
 	if err != nil {
 		return err
 	}
@@ -37,17 +43,17 @@ func (s *Server) Start() error {
 		Methods("GET").
 		Path("/shares/{key}").
 		HeadersRegexp("Accept", textHtmlRegex).
-		Handler(&DownloadPageHandler{
-			Templates: s.Templates,
+		Handler(&handlers.DownloadPageHandler{
+			Templates: templates,
 			Storage:   s.Storage,
 		})
 
 	router.
 		Methods("POST").
 		Path("/shares/{key}").
-		Handler(http.TimeoutHandler(&DownloadHandler{
+		Handler(http.TimeoutHandler(&handlers.DownloadHandler{
 			Storage:   s.Storage,
-			Templates: s.Templates,
+			Templates: templates,
 		}, time.Second*120, timeoutErrorTemplate))
 
 	router.
@@ -57,9 +63,9 @@ func (s *Server) Start() error {
 			"Content-Type", multipartFormDataRegex,
 			"Accept", textHtmlRegex,
 		).
-		Handler(http.TimeoutHandler(&UploadHandler{
+		Handler(http.TimeoutHandler(&handlers.UploadHandler{
 			Storage:          s.Storage,
-			Templates:        s.Templates,
+			Templates:        templates,
 			MaxFileSizeBytes: s.MaxFileSizeBytes,
 			DiskSpaceBytes:   s.DiskSpaceBytes,
 			Host:             s.Host,
@@ -69,16 +75,18 @@ func (s *Server) Start() error {
 		Methods("GET").
 		Path("/").
 		HeadersRegexp("Accept", textHtmlRegex).
-		Handler(&UploadPageHandler{
+		Handler(&handlers.UploadPageHandler{
 			Storage:          s.Storage,
-			Templates:        s.Templates,
+			Templates:        templates,
 			MaxFileSizeBytes: s.MaxFileSizeBytes,
 		})
 
 	router.
 		Methods("GET").
 		PathPrefix("/assets").
-		Handler(http.FileServer(http.FS(assets)))
+		Handler(http.StripPrefix("/assets", http.FileServer(http.FS(assets))))
+
+	// TODO add cors header handling
 
 	httpServer := http.Server{
 		Handler:      router,

@@ -1,9 +1,9 @@
-package server
+package handlers
 
 import (
 	"log"
 	"majo-tech.com/share/storage"
-	"majo-tech.com/share/templates"
+	"majo-tech.com/share/web/templates"
 	"net/http"
 )
 

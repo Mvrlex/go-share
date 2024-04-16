@@ -1,13 +1,14 @@
 package templates
 
 import (
+	"bytes"
 	"embed"
 	"errors"
 	"html/template"
 	"io"
 )
 
-//go:embed templates
+//go:embed static
 var templates embed.FS
 
 var TemplateLoadError = errors.New("could not load templates")
@@ -19,20 +20,20 @@ type Templates struct {
 	Error        *template.Template
 }
 
-func Load() (Templates, error) {
-	uploadPageTemplate, err := template.ParseFS(templates, "templates/index.gohtml", "templates/upload.page.gohtml", "templates/file-input.component.gohtml")
+func LoadTemplates() (Templates, error) {
+	uploadPageTemplate, err := template.ParseFS(templates, "static/index.gohtml", "static/upload.page.gohtml", "static/file-input.component.gohtml")
 	if err != nil {
 		return Templates{}, errors.Join(TemplateLoadError, err)
 	}
-	shareTemplate, err := template.ParseFS(templates, "templates/index.gohtml", "templates/upload-success.gohtml")
+	shareTemplate, err := template.ParseFS(templates, "static/index.gohtml", "static/upload-success.gohtml")
 	if err != nil {
 		return Templates{}, errors.Join(TemplateLoadError, err)
 	}
-	downloadPageTemplate, err := template.ParseFS(templates, "templates/index.gohtml", "templates/download.page.gohtml")
+	downloadPageTemplate, err := template.ParseFS(templates, "static/index.gohtml", "static/download.page.gohtml")
 	if err != nil {
 		return Templates{}, errors.Join(TemplateLoadError, err)
 	}
-	errorTemplate, err := template.ParseFS(templates, "templates/index.gohtml", "templates/error.gohtml")
+	errorTemplate, err := template.ParseFS(templates, "static/index.gohtml", "static/error.gohtml")
 	if err != nil {
 		return Templates{}, errors.Join(TemplateLoadError, err)
 	}
@@ -84,4 +85,13 @@ func (t *Templates) TemplateError(wr io.Writer, error string) error {
 	}{
 		Error: error,
 	})
+}
+
+func (t *Templates) TemplateTimeoutError() (string, error) {
+	var tpl bytes.Buffer
+	err := t.TemplateError(&tpl, "Your request took too long, so for security reasons, we closed the connection.")
+	if err != nil {
+		return "", err
+	}
+	return tpl.String(), nil
 }

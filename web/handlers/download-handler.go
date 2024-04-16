@@ -1,4 +1,4 @@
-package server
+package handlers
 
 import (
 	"errors"
@@ -7,7 +7,8 @@ import (
 	"io"
 	"log"
 	"majo-tech.com/share/storage"
-	"majo-tech.com/share/templates"
+	"majo-tech.com/share/web/handlers/util"
+	"majo-tech.com/share/web/templates"
 	"net/http"
 )
 
@@ -22,7 +23,7 @@ func (u *DownloadHandler) ServeHTTP(writer http.ResponseWriter, request *http.Re
 	err := request.ParseForm()
 	if err != nil && err != io.EOF {
 		log.Println("could not parse body of download request:", err)
-		WriteErrorPage(writer, u.Templates, http.StatusBadRequest, "Your request was malformed.")
+		util.WriteErrorPage(writer, u.Templates, http.StatusBadRequest, "Your request was malformed.")
 		return
 	}
 	password := request.PostFormValue("password")
@@ -31,12 +32,12 @@ func (u *DownloadHandler) ServeHTTP(writer http.ResponseWriter, request *http.Re
 	storedFile, err := u.Storage.Get(key, password)
 	if err != nil {
 		if errors.Is(err, &storage.FileNotFoundError{}) {
-			WriteErrorPage(writer, u.Templates, http.StatusNotFound, "This file (no longer?) exists.")
+			util.WriteErrorPage(writer, u.Templates, http.StatusNotFound, "This file (no longer?) exists.")
 		} else if errors.Is(err, storage.PasswordWrongError) {
-			WriteErrorPage(writer, u.Templates, http.StatusBadRequest, "The provided password is incorrect.")
+			util.WriteErrorPage(writer, u.Templates, http.StatusBadRequest, "The provided password is incorrect.")
 		} else {
 			log.Println("download request from user caused an error:", err)
-			WriteErrorPage(writer, u.Templates, http.StatusBadRequest, "Your request was malformed.")
+			util.WriteErrorPage(writer, u.Templates, http.StatusBadRequest, "Your request was malformed.")
 		}
 		return
 	}
@@ -52,7 +53,7 @@ func (u *DownloadHandler) ServeHTTP(writer http.ResponseWriter, request *http.Re
 	_, err = io.Copy(writer, storedFile)
 	if err != nil {
 		log.Println("could not send file to user:", err)
-		WriteErrorPage(writer, u.Templates, http.StatusInternalServerError, "Your request was malformed.")
+		util.WriteErrorPage(writer, u.Templates, http.StatusInternalServerError, "Your request was malformed.")
 		return
 	}
 

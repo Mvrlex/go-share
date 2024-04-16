@@ -1,4 +1,4 @@
-package server
+package handlers
 
 import (
 	"encoding/base64"
@@ -8,7 +8,8 @@ import (
 	"io"
 	"log"
 	"majo-tech.com/share/storage"
-	"majo-tech.com/share/templates"
+	"majo-tech.com/share/web/handlers/util"
+	"majo-tech.com/share/web/templates"
 	"net/http"
 )
 
@@ -45,13 +46,13 @@ func (u *UploadHandler) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 	maxFileSize := u.MaxFileSizeBytes + 1048576 // add 1 MB for the other form values
 	if request.ContentLength >= maxFileSize || request.ContentLength == -1 {
 		log.Println("request rejected because request body is too large")
-		WriteError(writer, u.Templates, http.StatusRequestEntityTooLarge, "Your file exceeds the maximum allowed size for file uploads.")
+		util.WriteError(writer, u.Templates, http.StatusRequestEntityTooLarge, "Your file exceeds the maximum allowed size for file uploads.")
 		return
 	}
 
 	if u.Storage.Size()+request.ContentLength > u.DiskSpaceBytes { // 30 GB
 		log.Println("request rejected because it would exceed the servers maximum allowed capacity")
-		WriteError(writer, u.Templates, http.StatusBadRequest, "Your file would exceed our servers current maximum capacity, please try again later.")
+		util.WriteError(writer, u.Templates, http.StatusBadRequest, "Your file would exceed our servers current maximum capacity, please try again later.")
 		return
 	}
 
@@ -59,26 +60,26 @@ func (u *UploadHandler) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 	multipartReader, err := request.MultipartReader()
 	if err != nil {
 		log.Println("could not create multipart reader:", err)
-		WriteError(writer, u.Templates, http.StatusInternalServerError, "Your request was malformed and our server could not handle it, this seems to be a problem on our side.")
+		util.WriteError(writer, u.Templates, http.StatusInternalServerError, "Your request was malformed and our server could not handle it, this seems to be a problem on our side.")
 		return
 	}
 
-	uploadRequest, err := ReadUploadFormData(multipartReader)
+	uploadRequest, err := util.ReadUploadFormData(multipartReader)
 	if err != nil {
-		if errors.Is(err, MaxBodySizeError) {
+		if errors.Is(err, util.MaxBodySizeError) {
 			log.Println("request rejected because request body is too large")
-			WriteError(writer, u.Templates, http.StatusBadRequest, "Your file exceeds the maximum allowed size for file uploads.")
+			util.WriteError(writer, u.Templates, http.StatusBadRequest, "Your file exceeds the maximum allowed size for file uploads.")
 			return
 		}
 		log.Println("malformed multipart request received:", err)
-		WriteError(writer, u.Templates, http.StatusInternalServerError, "Your request was malformed and our server could not handle it, this seems to be a problem on our side.")
+		util.WriteError(writer, u.Templates, http.StatusInternalServerError, "Your request was malformed and our server could not handle it, this seems to be a problem on our side.")
 		return
 	}
 
 	key, err := u.Storage.Store(uploadRequest.FileName, uploadRequest.FileReader, uploadRequest.Password, uploadRequest.Duration)
 	if err != nil {
 		log.Println("storing file failed:", err)
-		WriteError(writer, u.Templates, http.StatusInternalServerError, "We could not store your file on our server, this seems to be a problem on our side.")
+		util.WriteError(writer, u.Templates, http.StatusInternalServerError, "We could not store your file on our server, this seems to be a problem on our side.")
 		return
 	}
 
@@ -86,7 +87,7 @@ func (u *UploadHandler) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 	if err != io.EOF {
 		log.Println("additional content after file: ", part.FormName())
 		u.Storage.Remove(key)
-		WriteError(writer, u.Templates, http.StatusBadRequest, "Unexpected additional content after file. Uploading multiple files is not allowed.")
+		util.WriteError(writer, u.Templates, http.StatusBadRequest, "Unexpected additional content after file. Uploading multiple files is not allowed.")
 		return
 	}
 
@@ -104,7 +105,7 @@ func (u *UploadHandler) respondWithLinkToDownloadFile(writer http.ResponseWriter
 	if err != nil {
 		u.Storage.Remove(key) // sad... all that work for nothing ;(
 		log.Println("could not respond with share template", err)
-		WriteError(writer, u.Templates, http.StatusInternalServerError, "Storing the file was successful, but we could not serve you a response page. We deleted your file, please try again.")
+		util.WriteError(writer, u.Templates, http.StatusInternalServerError, "Storing the file was successful, but we could not serve you a response page. We deleted your file, please try again.")
 		return
 	}
 }

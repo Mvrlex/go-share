@@ -4,9 +4,8 @@ import (
 	"errors"
 	"log"
 	"majo-tech.com/share/environment"
-	"majo-tech.com/share/server"
 	"majo-tech.com/share/storage"
-	"majo-tech.com/share/templates"
+	"majo-tech.com/share/web"
 	"os"
 	"os/signal"
 	"syscall"
@@ -42,12 +41,6 @@ func main() {
 		os.Exit(1)
 	}()
 
-	// templates
-	templates, err := templates.Load()
-	if err != nil {
-		log.Fatalln("could not load templates,", err)
-	}
-
 	// environment vars
 	maxFileSize, err := environment.GetMaxFileSize()
 	if err != nil {
@@ -58,12 +51,9 @@ func main() {
 		log.Fatalln("could not read allowed disk space from environment:", err)
 	}
 
-	// TODO add cors header handling
-
 	// http server
-	server := server.Server{
+	server := web.Server{
 		Storage:          storage,
-		Templates:        templates,
 		MaxFileSizeBytes: environment.ValueOrDefault(maxFileSize, 104857600), // 100 MiB
 		DiskSpaceBytes:   environment.ValueOrDefault(diskSpace, 32212254720), // 30 GiB
 		Host:             environment.ValueOrDefault(environment.GetHost(), "http://localhost:8080"),

@@ -1,8 +1,7 @@
-package server
+package util
 
 import (
-	"bytes"
-	"majo-tech.com/share/templates"
+	"majo-tech.com/share/web/templates"
 	"net/http"
 )
 
@@ -22,13 +21,4 @@ func WriteErrorPage(writer http.ResponseWriter, templates templates.Templates, s
 	if err != nil {
 		http.Error(writer, desc, status)
 	}
-}
-
-func TimeoutErrorTemplate(templates templates.Templates) (string, error) {
-	var tpl bytes.Buffer
-	err := templates.TemplateError(&tpl, "Your request took too long, so for security reasons, we closed the connection.")
-	if err != nil {
-		return "", err
-	}
-	return tpl.String(), nil
 }

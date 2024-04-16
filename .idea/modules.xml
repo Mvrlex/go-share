@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/go-share.iml" filepath="$PROJECT_DIR$/.idea/go-share.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sfs/sfs.iml" filepath="$PROJECT_DIR$/sfs/sfs.iml" />
     </modules>
   </component>
 </project>

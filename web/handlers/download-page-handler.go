@@ -1,11 +1,12 @@
-package server
+package handlers
 
 import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"log"
 	"majo-tech.com/share/storage"
-	"majo-tech.com/share/templates"
+	"majo-tech.com/share/web/handlers/util"
+	"majo-tech.com/share/web/templates"
 	"net/http"
 )
 
@@ -20,7 +21,7 @@ func (u *DownloadPageHandler) ServeHTTP(writer http.ResponseWriter, request *htt
 
 	info := u.Storage.Info(key)
 	if info == nil {
-		WriteErrorPage(writer, u.Templates, 404, "This file (no longer?) exists.")
+		util.WriteErrorPage(writer, u.Templates, 404, "This file (no longer?) exists.")
 		return
 	}
 
@@ -28,7 +29,7 @@ func (u *DownloadPageHandler) ServeHTTP(writer http.ResponseWriter, request *htt
 	err := u.Templates.TemplateDownload(writer, key, info.Name, ByteCountIEC(info.Bytes), info.RequiresPassword)
 	if err != nil {
 		log.Println("could not respond with download template", err)
-		WriteError(writer, u.Templates, http.StatusInternalServerError, "Something majorly broke, and we could not serve you a response page.")
+		util.WriteError(writer, u.Templates, http.StatusInternalServerError, "Something majorly broke, and we could not serve you a response page.")
 		return
 	}
 
