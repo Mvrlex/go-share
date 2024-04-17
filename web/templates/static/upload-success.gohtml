@@ -1,13 +1,13 @@
 <!-- shows information for the uploaded file and a link + QR code for sharing -->
 {{ define "content" }}
   <article x-data="{ link: '{{ .Link }}' }" class="text-center mb-0">
-    <hgroup id="share-link-header">
+    <hgroup id="share-link-header" class="mb-0">
       <h2>Your file is ready!</h2>
       <p>Share the link with someone, so they can download it.</p>
     </hgroup>
     {{- if .QrCode -}}
     <img src="data:image/png;base64, {{ .QrCode }}" alt="QR-Code with your link"
-         style="padding: 3rem">
+         style="padding: 1rem">
     {{- end -}}
     <input :value="link" type="url" readonly value="{{ .Link }}" aria-label="Your link">
     <button type="button" class="flex flex-center mb-0 button-full"

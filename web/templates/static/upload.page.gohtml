@@ -13,8 +13,8 @@
           xhr.upload.onprogress = e => this.uploadProgress = e.loaded / e.total * 100;
           xhr.upload.onerror = () => alert('Some kind of connection issue occurred, we could not fully process your request. Please try again.');
           xhr.onloadend = () => this.isUploading = false;
-          xhr.onload = () => document.querySelector('article')
-            .replaceWith(xhr.responseXML.querySelector('article'));
+          xhr.onload = () => document.querySelector('main')
+            .replaceChildren(xhr.responseXML.querySelector('article'));
 
           xhr.open($event.target.method, $event.target.action);
           xhr.responseType = "document";
@@ -25,9 +25,17 @@
     })
   </script>
   <section class="page-header">
-    <h1>
-      Secure Single
-      <span class="text-highlight">File Sharing</span>
+    <h1 style="line-height: 1.3em;">
+      Just A
+      <span style="display: inline-block">
+        <span style="
+            color: white;
+            background: #0172ad;
+            padding: 0 0.3em;
+        ">File Share</span>
+        .
+      </span>
+      <br>
     </h1>
     <p>
       Simply pick a file and share the generated link. The file will only be available to
@@ -43,7 +51,7 @@
 
         <!-- TODO note: when changing value here, don't forget to adjust the validation in upload-multipart-reader.go -->
         <label class="input-grid-duration">
-          Storage duration
+          Duration
           <small id="storage-duration-help-text" class="block">Your file will
             only be available for a limited period of time, so we can delete it if your
             recipient does not have a need for it.</small>

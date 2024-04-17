@@ -60,16 +60,6 @@
     --pico-font-size: 118.75%;
   }
 }
-@media (min-width: 1280px) {
-  :root {
-    --pico-font-size: 125%;
-  }
-}
-@media (min-width: 1536px) {
-  :root {
-    --pico-font-size: 131.25%;
-  }
-}
 
 a {
   --pico-text-decoration: underline;
@@ -685,16 +675,6 @@ section {
 @media (min-width: 1024px) {
   .container {
     max-width: 950px;
-  }
-}
-@media (min-width: 1280px) {
-  .container {
-    max-width: 1200px;
-  }
-}
-@media (min-width: 1536px) {
-  .container {
-    max-width: 1450px;
   }
 }
 

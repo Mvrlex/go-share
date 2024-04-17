@@ -6,10 +6,6 @@
     margin-right: auto;
 }
 
-.text-highlight {
-    color: var(--pico-primary);
-}
-
 /* Upload page */
 
 .input-grid {
