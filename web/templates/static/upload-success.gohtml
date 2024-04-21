@@ -6,16 +6,17 @@
       <p>Share the link with someone, so they can download it.</p>
     </hgroup>
     {{- if .QrCode -}}
-    <img src="data:image/png;base64, {{ .QrCode }}" alt="QR-Code with your link"
-         style="padding: 1rem">
+    <img src="data:image/png;base64, {{ .QrCode }}" alt="QR-Code with your link" class="p-1">
     {{- end -}}
-    <input :value="link" type="url" readonly value="{{ .Link }}" aria-label="Your link">
-    <button type="button" class="flex flex-center mb-0 button-full"
-            @click="navigator.clipboard.writeText(link)">
-      <svg class="icon-sm" role="presentation">
-        <use href="assets/tabler-icons.svg#copy"></use>
-      </svg>
-      Copy link
-    </button>
+    <div role="group">
+      <input :value="link" type="url" readonly aria-label="Your link">
+      <button type="button" class="flex flex-center mb-0"
+              @click="navigator.clipboard.writeText(link)">
+        <svg class="icon-sm" role="presentation">
+          <use href="assets/tabler-icons.svg#copy"></use>
+        </svg>
+        Copy
+      </button>
+    </div>
   </article>
 {{ end }}

@@ -24,23 +24,26 @@
       }))
     })
   </script>
+  <!--
+  <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+       xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs"
+       viewBox="0 0 600 600">
+    <path d="M425.2617589341386 393.45550792753943C446.2041671779537 366.6230443451827 337.5654291815344 185.3403142426436 294.89527333843546 175.91623180449255C252.22511749533652 166.49214936634152 147.513076276261 300.65446727812537 169.24082387554483 336.9110132986332C190.96857147482868 373.167559319141 404.31935069032346 420.2879715098962 425.2617589341386 393.45550792753943C446.2041671779537 366.6230443451827 337.5654291815344 185.3403142426436 294.89527333843546 175.91623180449255 "
+          fill="black" stroke-width="0" stroke="hsl(340, 45%, 30%)"
+          transform="matrix(1,0,-0.5289809421253949,1,155.4492622837516,11.595962524414062)"></path>
+  </svg>
+  -->
   <section class="page-header">
-    <h1 style="line-height: 1.3em;">
+    <h1 class="page-title">
       Just A
-      <span style="display: inline-block">
-        <span style="
-            color: white;
-            background: #0172ad;
-            padding: 0 0.3em;
-        ">File Share</span>
+      <span class="inline-block">
+        <span class="page-title-highlight">File Share</span>
         .
       </span>
       <br>
     </h1>
     <p>
-      Simply pick a file and share the generated link. The file will only be available to
-      download <strong>exactly once</strong>, after which it is permanently deleted from
-      our servers.
+      Simply upload a file and share the link. The file will be available to download exactly once, and then deleted.
     </p>
   </section>
   <article x-data="fileForm" class="relative mb-0">
@@ -49,12 +52,11 @@
 
       <div class="input-grid">
 
-        <!-- TODO note: when changing value here, don't forget to adjust the validation in upload-multipart-reader.go -->
         <label class="input-grid-duration">
           Duration
-          <small id="storage-duration-help-text" class="block">Your file will
-            only be available for a limited period of time, so we can delete it if your
-            recipient does not have a need for it.</small>
+          <small id="storage-duration-help-text" class="block">
+            Storage duration after which the file is automatically deleted.
+          </small>
           <select name="duration" required class="mb-0">
             <option value="1m">1 minute</option>
             <option value="20m" selected>20 minutes</option>
@@ -65,8 +67,9 @@
 
         <label class="input-grid-password">
           Password (optional)
-          <small id="password-help-text" class="block">To download your file,
-            the recipient must enter this password.</small>
+          <small id="password-help-text" class="block">
+            Password that will be needed to download your file.
+          </small>
           <input type="password" name="password" aria-describedby="password-help-text"
                  minlength="4" maxlength="128" class="mb-0">
         </label>

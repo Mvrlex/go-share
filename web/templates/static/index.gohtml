@@ -1,15 +1,15 @@
 {{ define "layout" }}
   <!doctype html>
-  <html lang="en"
-        x-data="theme"
-        :data-theme="theme">
+  <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="color-scheme" content="light dark"/>
     <base href="/">
 
-    <link rel="stylesheet" href="assets/pico.css">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+
+    <link rel="stylesheet" href="assets/pico.min.css">
     <link rel="stylesheet" href="assets/styles.css">
     <script defer src="assets/alpine.min.js"></script>
     <script>
@@ -32,127 +32,29 @@
         })
     </script>
 
-    <!-- TODO -->
-    <!-- HTML Meta Tags -->
-    <!-- TODO add icons for dark and light mode -->
-    <title>Secure one-time file sharing</title>
-    <meta name="description"
-          content="Securely share a file with anyone. Simply upload the file, set a storage duration and share the link. Files are always stored encrypted, and permanentely deleted after they are downloaded.">
+    <title>Just A File Share</title>
 
-    <!-- Facebook Meta Tags -->
-    <meta property="og:url" content="https://example.com/">
+    <meta name="description" content="Securely share a file with anyone. Simply upload the file, set a storage duration and share the link. Files are always stored encrypted, and permanently deleted after they are downloaded.">
+    <meta property="og:url" content="https://just-a-file-share.com/">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Secure one-time file sharing">
-    <meta property="og:description"
-          content="Securely share a file with anyone. Simply upload the file, set a storage duration and share the link. Files are always stored encrypted, and permanentely deleted after they are downloaded.">
-    <meta property="og:image" content="https://example.com/opengraph.png">
+    <meta property="og:title" content="Secure One-Time File Sharing">
+    <meta property="og:description" content="Securely share a file with anyone. Simply upload the file, set a storage duration and share the link. Files are always stored encrypted, and permanently deleted after they are downloaded.">
 
-    <!-- Twitter Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:domain" content="example.com">
-    <meta property="twitter:url" content="https://example.com/">
-    <meta name="twitter:title" content="Secure one-time file sharing">
-    <meta name="twitter:description"
-          content="Securely share a file with anyone. Simply upload the file, set a storage duration and share the link. Files are always stored encrypted, and permanentely deleted after they are downloaded.">
-    <meta name="twitter:image" content="https://example.com/opengraph.png">
-
-    <!-- Meta Tags Generated via https://www.opengraph.xyz -->
-
-    <!-- TODO use classes for inline styles everywhere -->
-    <style>
-        html {
-            /*
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' viewBox='0 0 2400 800'%3E%3Cdefs%3E%3ClinearGradient x1='50%25' y1='0%25' x2='50%25' y2='100%25' id='sssurf-grad'%3E%3Cstop stop-color='hsl(208, 77%25, 50%25)' stop-opacity='1' offset='0%25'%3E%3C/stop%3E%3Cstop stop-color='hsl(208, 74%25, 93%25)' stop-opacity='1' offset='100%25'%3E%3C/stop%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='url(%23sssurf-grad)' transform='matrix(1,0,0,1,0,-90.5206298828125)'%3E%3Cpath d='M 0 318.52206603299396 Q 450 471.4721719922253 600 311.89703422519943 Q 1050 532.2651196340518 1200 340.4813619230547 Q 1650 634.3526589117735 1800 327.71220786872345 Q 2250 518.5439889928413 2400 301.04124718252035 L 2400 800 L 0 800 L 0 339.45357253970184 Z' transform='matrix(1,0,0,1,0,35)' opacity='0.05'%3E%3C/path%3E%3Cpath d='M 0 318.52206603299396 Q 450 471.4721719922253 600 311.89703422519943 Q 1050 532.2651196340518 1200 340.4813619230547 Q 1650 634.3526589117735 1800 327.71220786872345 Q 2250 518.5439889928413 2400 301.04124718252035 L 2400 800 L 0 800 L 0 339.45357253970184 Z' transform='matrix(1,0,0,1,0,70)' opacity='0.21'%3E%3C/path%3E%3Cpath d='M 0 318.52206603299396 Q 450 471.4721719922253 600 311.89703422519943 Q 1050 532.2651196340518 1200 340.4813619230547 Q 1650 634.3526589117735 1800 327.71220786872345 Q 2250 518.5439889928413 2400 301.04124718252035 L 2400 800 L 0 800 L 0 339.45357253970184 Z' transform='matrix(1,0,0,1,0,105)' opacity='0.37'%3E%3C/path%3E%3Cpath d='M 0 318.52206603299396 Q 450 471.4721719922253 600 311.89703422519943 Q 1050 532.2651196340518 1200 340.4813619230547 Q 1650 634.3526589117735 1800 327.71220786872345 Q 2250 518.5439889928413 2400 301.04124718252035 L 2400 800 L 0 800 L 0 339.45357253970184 Z' transform='matrix(1,0,0,1,0,140)' opacity='0.53'%3E%3C/path%3E%3Cpath d='M 0 318.52206603299396 Q 450 471.4721719922253 600 311.89703422519943 Q 1050 532.2651196340518 1200 340.4813619230547 Q 1650 634.3526589117735 1800 327.71220786872345 Q 2250 518.5439889928413 2400 301.04124718252035 L 2400 800 L 0 800 L 0 339.45357253970184 Z' transform='matrix(1,0,0,1,0,175)' opacity='0.68'%3E%3C/path%3E%3Cpath d='M 0 318.52206603299396 Q 450 471.4721719922253 600 311.89703422519943 Q 1050 532.2651196340518 1200 340.4813619230547 Q 1650 634.3526589117735 1800 327.71220786872345 Q 2250 518.5439889928413 2400 301.04124718252035 L 2400 800 L 0 800 L 0 339.45357253970184 Z' transform='matrix(1,0,0,1,0,210)' opacity='0.84'%3E%3C/path%3E%3Cpath d='M 0 318.52206603299396 Q 450 471.4721719922253 600 311.89703422519943 Q 1050 532.2651196340518 1200 340.4813619230547 Q 1650 634.3526589117735 1800 327.71220786872345 Q 2250 518.5439889928413 2400 301.04124718252035 L 2400 800 L 0 800 L 0 339.45357253970184 Z' transform='matrix(1,0,0,1,0,245)' opacity='1'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
-            background-size: cover;
-            background-attachment: fixed;
-             */
-        }
-
-        /* ALTERNATIVE: Paper Style?
-        html {
-            background-size: 40px 40px;
-            background-image: linear-gradient(to right, #80808014 1px, transparent 1px), linear-gradient(to bottom, #80808014 1px, transparent 1px);
-            background-repeat: repeat;
-        }
-        */
-
-        body {
-            min-height: 100vh;
-
-            display: flex;
-            flex-direction: column;
-        }
-
-        main {
-            margin-top: auto;
-            margin-bottom: auto;
-        }
-
-        /*
-        input[type="file"]:after {
-            content: "";
-        }
-
-        input[type='file'] {
-            width: auto;
-            height: auto;
-            white-space: normal;
-            word-wrap: break-word;
-            word-break: break-all;
-            line-height: 2.5rem;
-        }
-        */
-        input[type='file'] {
-            font-size: 0;
-            width: auto !important;
-        }
-
-        ::file-selector-button {
-            font-size: initial;
-        }
-
-        [x-cloak] {
-            display: none !important;
-        }
-
-        input, select, textarea {
-            transition: none;
-        }
-    </style>
   </head>
   <body>
-  <header class="container">
-  </header>
   <main class="container">
-      {{ template "content" . }}
+    {{ template "content" . }}
   </main>
-  <footer class="container" style="display: flex; justify-content: space-between; align-items: center;">
+  <footer class="container flex flex-between">
     <span>
       © <span x-text="new Date().getFullYear()">2024</span> Marcel Kaleta
     </span>
-    <nav>
-      <ul>
-        <li>
-          <a rel="noopener noreferrer" class="contrast" aria-label="GitHub repository"
-             href="https://github.com/" target="_blank">
-            <svg class="icon-lg">
-              <use href="assets/tabler-icons.svg#github"></use>
-            </svg>
-          </a>
-        </li>
-        <li>
-          <a x-on:click="toggleTheme()" class="contrast"
-             aria-label="Turn on dark mode" href="#">
-            <svg x-cloak x-show="isDarkMode()" class="icon-lg">
-              <use href="assets/tabler-icons.svg#moon"></use>
-            </svg>
-            <svg x-show="!isDarkMode()" class="icon-lg">
-              <use href="assets/tabler-icons.svg#sun"></use>
-            </svg>
-          </a>
-        </li>
-      </ul>
-    </nav>
+    <a rel="noopener noreferrer" aria-label="GitHub repository"
+       href="https://github.com/Mvrlex/go-share" target="_blank">
+      <svg class="icon">
+        <use href="assets/tabler-icons.svg#github"></use>
+      </svg>
+    </a>
   </footer>
   </body>
   </html>
