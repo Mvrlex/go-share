@@ -238,7 +238,7 @@ func writeFile(path string, value io.Reader) (int64, error) {
 }
 
 func createDirectory(path string) error {
-	if err := os.Mkdir(path, 0600); err != nil {
+	if err := os.Mkdir(path, 0700); err != nil {
 		return errors.Join(&DirectoryCreationError{Path: path}, err)
 	}
 	return nil
