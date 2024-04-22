@@ -19,6 +19,11 @@ func GetHost() string {
 	return env
 }
 
+func GetPort() string {
+	env, _ := os.LookupEnv("GOSHARE_PORT")
+	return env
+}
+
 func ValueOrDefault[T interface{}](val T, def T) T {
 	if reflect.DeepEqual(val, reflect.Zero(reflect.TypeOf(val)).Interface()) {
 		return def

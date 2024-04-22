@@ -46,6 +46,7 @@ func main() {
 		MaxFileSizeBytes: environment.ValueOrDefault(maxFileSize, 104857600), // 100 MiB
 		DiskSpaceBytes:   environment.ValueOrDefault(diskSpace, 32212254720), // 30 GiB
 		Host:             environment.ValueOrDefault(environment.GetHost(), "http://localhost:8080"),
+		Port:             environment.ValueOrDefault(environment.GetPort(), "8080"),
 	}
 	log.Fatalln(server.Start())
 

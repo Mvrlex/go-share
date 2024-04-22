@@ -20,6 +20,7 @@ type Server struct {
 	MaxFileSizeBytes int64 // Max size for a single file upload.
 	DiskSpaceBytes   int64 // Max size that the sum of all files are allowed to allocate on disk.
 	Host             string
+	Port             string
 }
 
 func (s *Server) Start() error {
@@ -45,7 +46,7 @@ func (s *Server) Start() error {
 
 	httpServer := http.Server{
 		Handler:      router,
-		Addr:         "127.0.0.1:8080",
+		Addr:         "127.0.0.1:" + s.Port,
 		WriteTimeout: time.Second * 125,
 		ReadTimeout:  time.Second * 125,
 	}
