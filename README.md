@@ -43,13 +43,13 @@ What I would like to change:
 For Windows:
 
 ```bash
-go env -w GOOS=windows GOARCH=amd64 | go build
+go env -w GOOS=windows GOARCH=amd64 | go build -ldflags "-s -w"
 ```
 
 For Linux (Debian):
 
 ```bash
-go env -w GOOS=linux GOARCH=amd64 | go build
+go env -w GOOS=linux GOARCH=amd64 | go build -ldflags "-s -w"
 ```
 
 ### Run the binary
