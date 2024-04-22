@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"log"
 	"majo-tech.com/share/environment"
 	"majo-tech.com/share/storage"
@@ -12,15 +11,6 @@ import (
 )
 
 func main() {
-
-	// logging
-	temp, err := os.CreateTemp("", "go-share.*.log")
-	if err != nil {
-		log.Fatalln(errors.Join(errors.New("could not create log file"), err))
-	}
-	defer os.Remove(temp.Name())
-	log.SetOutput(temp)
-	println("initialized log file at", temp.Name())
 
 	// storage
 	storagePath := "./shared"
@@ -37,7 +27,6 @@ func main() {
 	go func() {
 		<-shutdownSignal
 		storage.Close()
-		os.Remove(temp.Name())
 		os.Exit(1)
 	}()
 
