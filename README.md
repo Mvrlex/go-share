@@ -1,6 +1,68 @@
 # go-share
 
-Simple and fast encrypted one-time file sharing server developed in Go. 
+Simple and fast encrypted one-time file sharing server developed in Go.
+
+![Screenshot of the application](screenshot.png)
+
+## What is this?
+
+go-share is a minimalistic and fast file share for self-hosting. It serves a small web
+application where a user can upload a single file. The file is stored encrypted on disk
+until it is downloaded, after which the file gets deleted.
+
+## Why?
+
+This app is nothing revolutionary. Matter of fact, there are a lot better implementations,
+that do not need to store any data at all and simply act as a secure proxy. But this app
+is not supposed to be a commercial product, it was a personal project to:
+- learn Go
+- try out HTMX and AlpineJs
+- learn Linux and server administration
+- have a small file share for me and my friends
+- finally have a finished project ;)
+- have fun
+
+## What now?
+
+For me this project is finished. There is a lot that could be added, but I've got other
+projects I want to work on.
+
+What I would like to change:
+- Migrate to a JSON API and use React or something similar for the frontend
+- Either embrace the file storage idea or switch to an "encryption proxy"
+- Improve UX with better error messages, internationalization and accessibility
+- Make the app GDPR-compliant (it already mostly is as it does not process any user information)
+- Add terms of service and other legal stuff
+- Add tests for the http handlers
+- Add docker image
+
+## Installation
+
+### Build the project
+
+For Windows:
+
+```bash
+go env -w GOOS=windows GOARCH=amd64 | go build
+```
+
+For Linux (Debian):
+
+```bash
+go env -w GOOS=linux GOARCH=amd64 | go build
+```
+
+### Run the binary
+
+Run the resulting binary.
+The application uses these environment variables:
+
+| Name                  | Description                                                   | Default                |
+|-----------------------|---------------------------------------------------------------|------------------------|
+| GOSHARE_HOST          | Host the app runs on, used when generating links and for CORS | http://localhost:8080/ |
+| GOSHARE_MAX_FILE_SIZE | Max size for a single shared file in bytes                    | 104857600              |
+| GOSHARE_DISK_SPACE    | Max allowed allocated size for all files on disk in bytes     | 32212254720            |
+| GOSHARE_PORT          | Port the web server should run on                             | 8080                   |
 
 ## HTMX
 
@@ -39,9 +101,9 @@ for something that could have been done with a few lines of JavaScript.
 
 ##### HTMX lock-in
 
-You cannot just add HTMX, your whole application needs to build on top of it.
+You cannot "just add HTMX", your whole application needs to build on top of it.
 
-You lock your server to a proprietary library's format and architectural decisions.
+You lock your server into a proprietary library's format and architectural decisions.
 
 ##### No standard markup
 
@@ -107,12 +169,12 @@ adding a huge amount of complexity), and my application isn't that large or comp
 
 ### Personal opinion
 
-- I find it harder to understand what happens, especially in error cases. 
+- I find it harder to understand what happens, especially in error cases.
 - You either have a huge HTML, or a huge amount of template files which are hard to keep
-track of.
+  track of.
 - Combining markup, styles and logic in a single file makes them completely unreadable.
 - You need to know the whole markup of the application to understand how it works, there
-is no api.
+  is no api.
 - Creating production-ready HTMX is really difficult.
 
 ### Conclusion
