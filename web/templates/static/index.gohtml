@@ -12,25 +12,6 @@
     <link rel="stylesheet" href="assets/pico.min.css">
     <link rel="stylesheet" href="assets/styles.css">
     <script defer src="assets/alpine.min.js"></script>
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('theme', () => ({
-                theme: 'light',
-                init() {
-                    if (!localStorage.getItem('theme')) {
-                        localStorage.setItem('theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-                    }
-                    this.theme = localStorage.getItem('theme')
-                },
-                toggleTheme() {
-                    localStorage.setItem('theme', this.theme = this.theme === 'light' ? 'dark' : 'light')
-                },
-                isDarkMode() {
-                    return this.theme === 'dark'
-                }
-            }))
-        })
-    </script>
 
     <title>Just A File Share</title>
 
