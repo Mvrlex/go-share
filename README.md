@@ -64,6 +64,21 @@ The application uses these environment variables:
 | GOSHARE_DISK_SPACE    | Max allowed allocated size for all files on disk in bytes     | 32212254720            |
 | GOSHARE_PORT          | Port the web server should run on                             | 8080                   |
 
+### Alternative: Docker
+
+Alternatively you can use the provided Dockerfile to build a Docker image.
+
+```bash
+docker build -t go-share .
+docker run -p 8080:8080 go-share
+```
+
+The Docker image provides the same environment variables as the binary.
+
+### Visit the app
+
+Visit the app in your browser at `http://localhost:8080/`.
+
 ## HTMX
 
 Initially this should have been a Go + HTMX Project, but after a month of work I had

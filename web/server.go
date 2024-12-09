@@ -46,7 +46,7 @@ func (s *Server) Start() error {
 
 	httpServer := http.Server{
 		Handler:      router,
-		Addr:         "127.0.0.1:" + s.Port,
+		Addr:         "0.0.0.0:" + s.Port,
 		WriteTimeout: time.Second * 125,
 		ReadTimeout:  time.Second * 125,
 	}
